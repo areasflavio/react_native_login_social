@@ -1,13 +1,19 @@
 import { Container, Email, Name, Photo } from './styles';
 
-export function User() {
+export type UserProps = {
+  name: string;
+  email: string;
+  picture: string;
+};
+
+export function User({ email, name, picture }: UserProps) {
   return (
     <Container>
-      <Photo source={{ uri: 'https://github.com/areasflavio.png' }} />
+      <Photo source={{ uri: picture }} />
 
-      <Name>Flávio</Name>
+      <Name>{name}</Name>
 
-      <Email>flavio@email.com</Email>
+      <Email>{email}</Email>
     </Container>
   );
 }

@@ -1,9 +1,10 @@
 import * as AuthSession from 'expo-auth-session';
+import { useState } from 'react';
 
 import { GCP_CLIENT_ID, GCP_REDIRECT_URI } from 'react-native-dotenv';
 
 import { Button } from '../Button';
-import { User } from '../User';
+import { User, UserProps } from '../User';
 
 import { Container } from './styles';
 
@@ -15,6 +16,8 @@ type AuthResponse = {
 };
 
 export function Form() {
+  const [userData, setUserData] = useState<UserProps | null>(null);
+
   async function handleGoogleSignIn() {
     try {
       const clientId = GCP_CLIENT_ID;
@@ -28,7 +31,14 @@ export function Form() {
         authUrl,
       })) as AuthResponse;
 
-      console.log({ params, type });
+      if (!(type === 'success')) throw new Error('Auth session error.');
+
+      const response = await fetch(
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`
+      );
+      const user = await response.json();
+
+      setUserData(user);
     } catch (err) {
       console.error(err);
     }
@@ -42,7 +52,7 @@ export function Form() {
         onPress={handleGoogleSignIn}
       />
 
-      {/* <User /> */}
+      {userData && <User {...userData} />}
     </Container>
   );
 }
